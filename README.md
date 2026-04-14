@@ -45,6 +45,8 @@ If you are on macOS, open the built-in **Terminal** app. On Windows, open **Git 
 
    Open the new `.env` file and replace the placeholder values with the SQL Server hostname, database, username, password, driver, and optional port provided by your instructor.
 
+   If you work with the SOPRA CRUD project, also fill `APP_USER` with your HdM account name. This Streamlit warm-up app only runs read queries and does not use `APP_USER`; the full SOPRA app uses it for audit fields during insert and update operations.
+
 5. Launch the Streamlit app (you may use the integrated terminal in VS Code or your previous terminal window)
 
    ```bash
@@ -65,6 +67,7 @@ If you are on macOS, open the built-in **Terminal** app. On Windows, open **Git 
 
 - `app.py` – Streamlit app that authenticates with SQL Server, runs SOPRA-oriented ad-hoc queries, and displays the results in a table.
 - `.env.example` – template with placeholders for your connection parameters. Copy this to `.env` and update the values before running the app.
+  `APP_USER` is included for consistency with the full SOPRA CRUD project, but this read-only warm-up app does not use it.
 - `pyproject.toml` – dependency definition for `uv sync`. Don't edit this file directly; use `uv add <package>` to add new packages.
 
 ## Python packages used
