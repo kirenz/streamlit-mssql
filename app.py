@@ -826,15 +826,17 @@ with analytics_tab:
                                 else:
                                     chart_obj = base_chart.mark_point(size=70, filled=True)
 
-                                x_field = alt.Field(
-                                    x_axis,
-                                    type="temporal" if x_axis in column_roles["temporal"] else "nominal",
-                                )
-                                y_field = alt.Field("value", type="quantitative")
-
                                 encoding_kwargs: dict[str, Any] = {
-                                    "x": alt.X(x_field, title=x_axis),
-                                    "y": alt.Y(y_field, title=y_title),
+                                    "x": alt.X(
+                                        field=x_axis,
+                                        type="temporal" if x_axis in column_roles["temporal"] else "nominal",
+                                        title=x_axis,
+                                    ),
+                                    "y": alt.Y(
+                                        field="value",
+                                        type="quantitative",
+                                        title=y_title,
+                                    ),
                                     "tooltip": [
                                         alt.Tooltip(x_axis, title=x_axis),
                                         alt.Tooltip("value", title=y_title),
@@ -843,7 +845,8 @@ with analytics_tab:
 
                                 if group_column:
                                     encoding_kwargs["color"] = alt.Color(
-                                        alt.Field(group_column, type="nominal"),
+                                        field=group_column,
+                                        type="nominal",
                                         title=group_column,
                                     )
                                     encoding_kwargs["tooltip"].insert(
