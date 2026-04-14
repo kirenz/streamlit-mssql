@@ -854,7 +854,7 @@ with analytics_tab:
                                     )
 
                                 chart = chart_obj.encode(**encoding_kwargs).properties(height=420)
-                                st.altair_chart(chart, use_container_width=True)
+                                st.altair_chart(chart, width="stretch")
 
                                 aggregated_preview = aggregated.head(100)
                                 st.caption("Aggregated dataset preview")
