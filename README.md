@@ -55,15 +55,15 @@ If you are on macOS, open the built-in **Terminal** app. On Windows, open **Git 
 
    Streamlit prints a local URL (typically `http://localhost:8501`). Open it in your browser to load the app.
 
-6. Test a query
+6. Test a SOPRA query
 
-   The app includes a sample `SELECT` statement that lists the first few tables in your database. Click **Run query** to verify the connection works. Update the SQL text area to explore other tables you have access to and rerun the command above.
+   The app includes sample `SELECT` statements for `list_views.V_LIST_B2B_DISCOUNT` and `dbo.LOV_CUSTOMER`. Click **Run query** to verify the connection and permissions. Update the SQL text area to explore other objects you have access to and rerun the command above.
 
 
 
 ## Files
 
-- `app.py` – Streamlit app that authenticates with SQL Server, runs ad-hoc queries, and displays the results in a table.
+- `app.py` – Streamlit app that authenticates with SQL Server, runs SOPRA-oriented ad-hoc queries, and displays the results in a table.
 - `.env.example` – template with placeholders for your connection parameters. Copy this to `.env` and update the values before running the app.
 - `pyproject.toml` – dependency definition for `uv sync`. Don't edit this file directly; use `uv add <package>` to add new packages.
 

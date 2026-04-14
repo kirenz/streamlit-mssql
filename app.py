@@ -266,47 +266,51 @@ def prepare_chart_dataset(
 # User experience configuration
 # ---------------------------------------------------------------------------
 
-# Provide a curated onboarding query that demonstrates the structure of the UI.
+# Provide a curated onboarding query that matches the SOPRA CRUD project.
 DEFAULT_QUERY: str = (
     "SELECT TOP (10)\n"
-    "    name,\n"
-    "    create_date,\n"
-    "    modify_date\n"
-    "FROM sys.tables\n"
-    "ORDER BY name;"
+    "    RabattID,\n"
+    "    Kunde,\n"
+    "    MengeVon,\n"
+    "    MengeBis,\n"
+    "    RabattProzent,\n"
+    "    GiltVon,\n"
+    "    GiltBis\n"
+    "FROM list_views.V_LIST_B2B_DISCOUNT\n"
+    "ORDER BY RabattID DESC;"
 )
 
 # Curated examples available from the sidebar to speed up exploration.
 SAMPLE_QUERIES: dict[str, str] = {
-    "Top 10 tables by creation date": DEFAULT_QUERY,
-    "Database size summary": (
-        "SELECT DB_NAME(database_id) AS database_name,\n"
-        "       CAST(SUM(size) * 8.0 / 1024 AS DECIMAL(10,2)) AS size_mb\n"
-        "FROM sys.master_files\n"
-        "GROUP BY database_id\n"
-        "ORDER BY size_mb DESC;"
-    ),
-    "Active user sessions": (
+    "SOPRA latest discounts": DEFAULT_QUERY,
+    "SOPRA customer dropdown values": (
         "SELECT TOP (25)\n"
-        "       session_id,\n"
-        "       login_name,\n"
-        "       status,\n"
-        "       host_name,\n"
-        "       program_name,\n"
-        "       cpu_time\n"
-        "FROM sys.dm_exec_sessions\n"
-        "WHERE is_user_process = 1\n"
-        "ORDER BY cpu_time DESC;"
+        "    CUSTOMER_ID,\n"
+        "    CUSTOMER_LONG\n"
+        "FROM dbo.LOV_CUSTOMER\n"
+        "ORDER BY CUSTOMER_ID;"
     ),
-    "Row counts for base tables": (
+    "SOPRA active discounts": (
         "SELECT TOP (25)\n"
-        "       SCHEMA_NAME(schema_id) AS schema_name,\n"
-        "       name AS table_name,\n"
-        "       SUM(row_count) AS row_count\n"
-        "FROM sys.dm_db_partition_stats\n"
-        "WHERE index_id IN (0, 1)\n"
-        "GROUP BY schema_id, name\n"
-        "ORDER BY row_count DESC;"
+        "    RabattID,\n"
+        "    Kunde,\n"
+        "    MengeVon,\n"
+        "    MengeBis,\n"
+        "    RabattProzent,\n"
+        "    GiltVon,\n"
+        "    GiltBis\n"
+        "FROM list_views.V_LIST_B2B_DISCOUNT\n"
+        "WHERE GiltVon <= CAST(GETDATE() AS date)\n"
+        "  AND (GiltBis IS NULL OR GiltBis >= CAST(GETDATE() AS date))\n"
+        "ORDER BY Kunde, MengeVon;"
+    ),
+    "Available base tables": (
+        "SELECT TOP (25)\n"
+        "    TABLE_SCHEMA,\n"
+        "    TABLE_NAME,\n"
+        "    TABLE_TYPE\n"
+        "FROM INFORMATION_SCHEMA.TABLES\n"
+        "ORDER BY TABLE_SCHEMA, TABLE_NAME;"
     ),
 }
 
@@ -424,7 +428,7 @@ def render_sidebar_controls(connection_ready: bool, error_text: str | None) -> d
 # Page rendering
 # ---------------------------------------------------------------------------
 
-st.set_page_config(page_title="SQL Server Analytics Workspace", layout="wide")
+st.set_page_config(page_title="SOPRA SQL Server Workspace", layout="wide")
 initialize_session_state(DEFAULT_QUERY)
 
 connection_url: str | None = None
@@ -440,10 +444,9 @@ except (RuntimeError, SQLAlchemyError) as exc:
 
 sidebar_preferences = render_sidebar_controls(connection_ready, error_message)
 
-st.title("SQL Server Analytics Workspace")
+st.title("SOPRA SQL Server Workspace")
 st.caption(
-    "Secure workspace for analysts and engineers to run on-demand SQL against the "
-    "enterprise data platform."
+    "Small Streamlit workspace for testing read queries against the SOPRA SQL Server database."
 )
 
 if not connection_ready:
@@ -485,8 +488,8 @@ query_tab, schema_tab, analytics_tab = st.tabs(
 with query_tab:
     st.subheader("Query workspace")
     st.markdown(
-        "Leverage the curated queries from the sidebar or paste your own statement. "
-        "All executions are read-only and limited to the privileges of your database user."
+        "Use the curated SOPRA queries from the sidebar or paste your own statement. "
+        "All executions are limited to the privileges of your database user."
     )
 
     with st.form("sql-form", clear_on_submit=False):
